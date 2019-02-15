@@ -35,7 +35,7 @@ const POPPER_MODIFIERS: PopperModifiers = {
 const TRANSITION_DURATION = 100;
 
 /* istanbul ignore next */
-class ContextMenu extends AbstractPureComponent<IOverlayLifecycleProps, IContextMenuState> {
+export class ContextMenu extends AbstractPureComponent<IOverlayLifecycleProps, IContextMenuState> {
     public state: IContextMenuState = {
         isDarkTheme: false,
         isOpen: false,
