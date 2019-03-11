@@ -1,6 +1,6 @@
 {
-  "name": "@blueprintjs/core",
-  "version": "3.4.0",
+  "name": "@nautiluslabs/blueprint-core",
+  "version": "3.4.0-nl-RC0",
   "description": "Core styles & components",
   "main": "lib/cjs/index.js",
   "module": "lib/esm/index.js",
@@ -70,7 +70,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:palantir/blueprint.git"
+    "url": "git@github.com:nautiluslabs/blueprint-core.git"
   },
   "keywords": [
     "palantir",
