@@ -32,7 +32,7 @@ export interface IContextMenuProps extends IOverlayLifecycleProps {
 
 /* istanbul ignore next */
 export class ControlledContextMenu extends AbstractPureComponent<IContextMenuProps, {}> {
-    portalElement: HTMLDivElement;
+    private portalElement: HTMLDivElement;
 
     constructor(props: IContextMenuProps) {
         super(props);
@@ -40,10 +40,6 @@ export class ControlledContextMenu extends AbstractPureComponent<IContextMenuPro
         this.portalElement = document.createElement("div");
         this.portalElement.classList.add(Classes.CONTEXT_MENU);
         document.body.appendChild(this.portalElement);
-    }
-
-    componentWillUnmount() {
-        this.portalElement.remove();
     }
 
     public render() {
@@ -78,8 +74,12 @@ export class ControlledContextMenu extends AbstractPureComponent<IContextMenuPro
                     transitionDuration={TRANSITION_DURATION}
                 />
             </div>,
-            this.portalElement
+            this.portalElement,
         );
+    }
+
+    public componentWillUnmount() {
+        this.portalElement.remove();
     }
 
     private cancelContextMenu = (e: React.SyntheticEvent<HTMLDivElement>) => e.preventDefault();
@@ -109,17 +109,18 @@ interface IContextMenuState {
 }
 
 const POPPER_MODIFIERS: PopperModifiers = {
-    preventOverflow: { boundariesElement: "viewport" }
+    preventOverflow: { boundariesElement: "viewport" },
 };
 const TRANSITION_DURATION = 100;
 
 /* istanbul ignore next */
+// tslint:disable-next-line:max-classes-per-file
 class ContextMenu extends AbstractPureComponent<IOverlayLifecycleProps, IContextMenuState> {
     public state: IContextMenuState = {
         isDarkTheme: false,
         isOpen: false,
         menu: null,
-        offset: null
+        offset: null,
     };
 
     public render() {
