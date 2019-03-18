@@ -39,6 +39,19 @@ export interface ISuggestProps<T> extends IListItemsProps<T> {
     inputValueRenderer: (item: T) => string;
 
     /**
+     * The uncontrolled default selected item.
+     * This prop is ignored if `selectedItem` is used to control the state.
+     */
+    defaultSelectedItem?: T;
+
+    /**
+     * The currently selected item, or `null` to indicate that no item is selected.
+     * If omitted, this prop will be uncontrolled (managed by the component's state).
+     * Use `onItemSelect` to listen for updates.
+     */
+    selectedItem?: T | null;
+
+    /**
      * Whether the popover opens on key down or when the input is focused.
      * @default false
      */
@@ -50,7 +63,7 @@ export interface ISuggestProps<T> extends IListItemsProps<T> {
 
 export interface ISuggestState<T> {
     isOpen: boolean;
-    selectedItem?: T;
+    selectedItem: T | null;
 }
 
 export class Suggest<T> extends React.PureComponent<ISuggestProps<T>, ISuggestState<T>> {
@@ -66,10 +79,6 @@ export class Suggest<T> extends React.PureComponent<ISuggestProps<T>, ISuggestSt
         return Suggest as new (props: ISuggestProps<T>) => Suggest<T>;
     }
 
-    public state: ISuggestState<T> = {
-        isOpen: (this.props.popoverProps && this.props.popoverProps.isOpen) || false,
-    };
-
     private TypedQueryList = QueryList.ofType<T>();
     private input?: HTMLInputElement | null;
     private queryList?: QueryList<T> | null;
@@ -81,6 +90,14 @@ export class Suggest<T> extends React.PureComponent<ISuggestProps<T>, ISuggestSt
         },
         queryList: (ref: QueryList<T> | null) => (this.queryList = ref),
     };
+
+    constructor(props: ISuggestProps<T>, context?: any) {
+        super(props, context);
+        this.state = {
+            isOpen: (props.popoverProps && props.popoverProps.isOpen) || false,
+            selectedItem: this.getInitialSelectedItem(),
+        };
+    }
 
     public render() {
         // omit props specific to this component, spread the rest.
@@ -94,6 +111,13 @@ export class Suggest<T> extends React.PureComponent<ISuggestProps<T>, ISuggestSt
                 renderer={this.renderQueryList}
             />
         );
+    }
+
+    public componentWillReceiveProps(nextProps: ISuggestProps<T>) {
+        // If the selected item prop changes, update the underlying state.
+        if (nextProps.selectedItem !== undefined && nextProps.selectedItem !== this.state.selectedItem) {
+            this.setState({ selectedItem: nextProps.selectedItem });
+        }
     }
 
     public componentDidUpdate(_prevProps: ISuggestProps<T>, prevState: ISuggestState<T>) {
@@ -174,14 +198,30 @@ export class Suggest<T> extends React.PureComponent<ISuggestProps<T>, ISuggestSt
             }
             nextOpenState = false;
         }
-
-        this.setState({
-            isOpen: nextOpenState,
-            selectedItem: item,
-        });
+        // the internal state should only change when uncontrolled.
+        if (this.props.selectedItem === undefined) {
+            this.setState({
+                isOpen: nextOpenState,
+                selectedItem: item,
+            });
+        } else {
+            // otherwise just set the next open state.
+            this.setState({ isOpen: nextOpenState });
+        }
 
         Utils.safeInvoke(this.props.onItemSelect, item, event);
     };
+
+    private getInitialSelectedItem(): T | null {
+        // controlled > uncontrolled > default
+        if (this.props.selectedItem !== undefined) {
+            return this.props.selectedItem;
+        } else if (this.props.defaultSelectedItem !== undefined) {
+            return this.props.defaultSelectedItem;
+        } else {
+            return null;
+        }
+    }
 
     private handlePopoverInteraction = (nextOpenState: boolean) =>
         requestAnimationFrame(() => {

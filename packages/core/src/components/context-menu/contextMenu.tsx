@@ -16,6 +16,8 @@ import { IOverlayLifecycleProps } from "../overlay/overlay";
 import { Popover } from "../popover/popover";
 import { PopperModifiers } from "../popover/popoverSharedProps";
 
+export { ControlledContextMenu } from "./controlledContextMenu";
+
 export interface IOffset {
     left: number;
     top: number;
@@ -108,10 +110,10 @@ interface IContextMenuState {
     onClose?: () => void;
 }
 
-const POPPER_MODIFIERS: PopperModifiers = {
+export const POPPER_MODIFIERS: PopperModifiers = {
     preventOverflow: { boundariesElement: "viewport" },
 };
-const TRANSITION_DURATION = 100;
+export const TRANSITION_DURATION = 100;
 
 /* istanbul ignore next */
 // tslint:disable-next-line:max-classes-per-file

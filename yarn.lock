@@ -2,6 +2,30 @@
 # yarn lockfile v1
 
 
+"@blueprintjs/core@^3.0.0", "@blueprintjs/core@^3.1.0", "@blueprintjs/core@^3.4.0", "@blueprintjs/core@^3.6.0":
+  version "3.14.1"
+  resolved "https://registry.yarnpkg.com/@blueprintjs/core/-/core-3.14.1.tgz#9a0c816bbe6c232d6515361f502506a1fb53acfb"
+  integrity sha512-DlBkztfvk5RgD+MBo22LFxLa7Rz8DVgszNdXF0MY63QGjb1uYwdSJIKXtsN1bn42SRTz24Bzp498VhSJ2+5FuQ==
+  dependencies:
+    "@blueprintjs/icons" "^3.6.0"
+    "@types/dom4" "^2.0.1"
+    classnames "^2.2"
+    dom4 "^2.0.1"
+    normalize.css "^8.0.0"
+    popper.js "^1.14.1"
+    react-popper "^1.0.0"
+    react-transition-group "^2.2.1"
+    resize-observer-polyfill "^1.5.0"
+    tslib "^1.9.0"
+
+"@blueprintjs/icons@^3.6.0":
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/@blueprintjs/icons/-/icons-3.6.0.tgz#af1d2de091d67927ed61671e6967c43620cb416d"
+  integrity sha512-sgB6rJtMjc2mS4aCS+65gK5DCr8fiWgOYi0buc0ODvGD2fwOtOFZuE4Duuj6/GZnCYj4s7E8NZgYK9Krd7G73Q==
+  dependencies:
+    classnames "^2.2"
+    tslib "^1.9.0"
+
 "@types/chai@^4.1.0":
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/@types/chai/-/chai-4.1.1.tgz#15f1257fab17b7acb9c413f9f88d3d87f834d11e"
@@ -21,6 +45,11 @@
 "@types/dom4@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@types/dom4/-/dom4-2.0.0.tgz#00dc42fed6b36a7a6dabb8f7a9c9e678ee644e05"
+
+"@types/dom4@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@types/dom4/-/dom4-2.0.1.tgz#506d5781b9bcab81bd9a878b198aec7dee2a6033"
+  integrity sha512-kSkVAvWmMZiCYtvqjqQEwOmvKwcH+V4uiv3qPQ8pAh1Xl39xggGEo8gHUqV4waYGHezdFw0rKBR8Jt0CrQSDZA==
 
 "@types/downloadjs@^1.4.0":
   version "1.4.0"
@@ -1133,6 +1162,10 @@ cipher-base@^1.0.0, cipher-base@^1.0.1, cipher-base@^1.0.3:
   dependencies:
     inherits "^2.0.1"
     safe-buffer "^5.0.1"
+
+circle-github-bot@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/circle-github-bot/-/circle-github-bot-1.0.0.tgz#ed86b3a8003c3f9a4ef0e7c4311f6c4e58fdafdb"
 
 circular-dependency-plugin@^4.3.0:
   version "4.4.0"
@@ -4539,10 +4572,6 @@ kss@^3.0.0-beta.18:
   version "0.34.2"
   resolved "https://codeload.github.com/atom/language-less/tar.gz/15411a47c03a8bb8244aa86207095f4fe7921911"
 
-"language-typescript@github:giladgray/language-typescript#10.1.15":
-  version "10.1.15"
-  resolved "https://codeload.github.com/giladgray/language-typescript/tar.gz/e2dcce4b32c481318096f761c5a2ce4fc70bb96f"
-
 lazy-cache@^0.2.3:
   version "0.2.7"
   resolved "https://registry.yarnpkg.com/lazy-cache/-/lazy-cache-0.2.7.tgz#7feddf2dcb6edb77d11ef1d117ab5ffdf0ab1b65"
@@ -5230,6 +5259,10 @@ nan@^2.0.7:
 nan@^2.0.9, nan@^2.3.0, nan@^2.3.2:
   version "2.8.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.8.0.tgz#ed715f3fe9de02b57a5e6252d90a96675e1f085a"
+
+nan@^2.10.0:
+  version "2.11.0"
+  resolved "https://registry.yarnpkg.com/nan/-/nan-2.11.0.tgz#574e360e4d954ab16966ec102c0c049fd961a099"
 
 nanomatch@^1.2.5:
   version "1.2.7"
@@ -7147,9 +7180,9 @@ sass-graph@^2.1.1, sass-graph@^2.2.4:
     scss-tokenizer "^0.2.3"
     yargs "^7.0.0"
 
-sass-inline-svg@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/sass-inline-svg/-/sass-inline-svg-1.1.0.tgz#c7233820f7bf8fd3dfc64fb3ee21c07abe514c25"
+sass-inline-svg@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/sass-inline-svg/-/sass-inline-svg-1.2.0.tgz#6a96a4f6674651dc5dd2e261862c303786eecf0e"
   dependencies:
     css-select "^1.2.0"
     deasync "^0.1.7"
@@ -8143,6 +8176,12 @@ tough-cookie@~2.3.0, tough-cookie@~2.3.3:
   resolved "https://registry.yarnpkg.com/tough-cookie/-/tough-cookie-2.3.3.tgz#0b618a5565b6dea90bf3425d04d55edc475a7561"
   dependencies:
     punycode "^1.4.1"
+
+tree-sitter-typescript@^0.13.3:
+  version "0.13.3"
+  resolved "https://registry.yarnpkg.com/tree-sitter-typescript/-/tree-sitter-typescript-0.13.3.tgz#2a4d2eb481988c5b386948cd7346492f635b4d76"
+  dependencies:
+    nan "^2.10.0"
 
 trim-newlines@^1.0.0:
   version "1.0.0"
