@@ -1,10 +1,26 @@
 /*
  * Copyright 2017 Palantir Technologies, Inc. All rights reserved.
- * Licensed under the terms of the LICENSE file distributed with this project.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 import { expect } from "chai";
-import { mount, ReactWrapper, shallow } from "enzyme";
+import {
+    mount as untypedMount,
+    MountRendererProps,
+    ReactWrapper,
+    shallow as untypedShallow,
+    ShallowRendererProps,
+} from "enzyme";
 import * as React from "react";
 import { spy } from "sinon";
 
@@ -24,12 +40,22 @@ import {
     Position,
 } from "../../src/index";
 
+/**
+ * @see https://github.com/DefinitelyTyped/DefinitelyTyped/issues/26979#issuecomment-465304376
+ */
+// tslint:disable no-unnecessary-callback-wrapper
+const mount = (el: React.ReactElement<INumericInputProps>, options?: MountRendererProps) =>
+    untypedMount<NumericInput>(el, options);
+const shallow = (el: React.ReactElement<INumericInputProps>, options?: ShallowRendererProps) =>
+    untypedShallow<NumericInput>(el, options);
+// tslint:enable no-unnecessary-callback-wrapper
+
 describe("<NumericInput>", () => {
     describe("Defaults", () => {
         it("renders the buttons on the right by default", () => {
             // this ordering is trivial to test with shallow renderer
             // (no DOM elements getting in the way)
-            const component = shallow(<NumericInput />);
+            const component = untypedShallow(<NumericInput />);
             const rightGroup = component.children().last();
             expect(rightGroup.is(ButtonGroup)).to.be.true;
         });
@@ -97,7 +123,7 @@ describe("<NumericInput>", () => {
         it(`always renders the children in a ControlGroup`, () => {
             // if the input is put into a control group by itself, it'll have squared border radii
             // on the left, which we don't want.
-            const component = shallow<INumericInputProps>(<NumericInput />);
+            const component = shallow(<NumericInput />);
             expect(component.find(ControlGroup).exists()).to.be.true;
             component.setProps({ buttonPosition: null });
             expect(component.find(ControlGroup).exists()).to.be.true;

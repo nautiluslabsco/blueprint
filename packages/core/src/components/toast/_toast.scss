@@ -1,5 +1,5 @@
 // Copyright 2016 Palantir Technologies, Inc. All rights reserved.
-// Licensed under the terms of the LICENSE file distributed with this project.
+// Licensed under the Apache License, Version 2.0.
 
 @import "../../common/variables";
 @import "../../common/react-transition";
@@ -144,6 +144,7 @@ $toast-margin: $pt-grid-size * 2 !default;
 .#{$ns}-toast-message {
   flex: 1 1 auto;
   padding: centered-text($toast-height);
+  word-break: break-word;
 }
 
 .#{$ns}-toast-container {

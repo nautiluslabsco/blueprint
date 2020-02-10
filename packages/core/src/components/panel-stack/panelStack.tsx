@@ -1,14 +1,26 @@
 /*
  * Copyright 2018 Palantir Technologies, Inc. All rights reserved.
  *
- * Licensed under the terms of the LICENSE file distributed with this project.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 import classNames from "classnames";
 import * as React from "react";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 
+import { AbstractPureComponent } from "../../common/abstractPureComponent";
 import * as Classes from "../../common/classes";
+import * as Errors from "../../common/errors";
 import { IProps } from "../../common/props";
 import { safeInvoke } from "../../common/utils";
 import { IPanel } from "./panelProps";
@@ -18,8 +30,10 @@ export interface IPanelStackProps extends IProps {
     /**
      * The initial panel to show on mount. This panel cannot be removed from the
      * stack and will appear when the stack is empty.
+     * This prop is only used in uncontrolled mode and is thus mutually
+     * exclusive with the `stack` prop.
      */
-    initialPanel: IPanel<any>;
+    initialPanel?: IPanel<any>;
 
     /**
      * Callback invoked when the user presses the back button or a panel invokes
@@ -32,6 +46,18 @@ export interface IPanelStackProps extends IProps {
      * prop method.
      */
     onOpen?: (addedPanel: IPanel) => void;
+
+    /**
+     * Whether to show the header with the "back" button in each panel.
+     * @default true
+     */
+    showPanelHeader?: boolean;
+
+    /**
+     * The full stack of panels in controlled mode. The last panel in the stack
+     * will be displayed.
+     */
+    stack?: Array<IPanel<any>>;
 }
 
 export interface IPanelStackState {
@@ -42,11 +68,20 @@ export interface IPanelStackState {
     stack: IPanel[];
 }
 
-export class PanelStack extends React.PureComponent<IPanelStackProps, IPanelStackState> {
+export class PanelStack extends AbstractPureComponent<IPanelStackProps, IPanelStackState> {
     public state: IPanelStackState = {
         direction: "push",
-        stack: [this.props.initialPanel],
+        stack: this.props.stack != null ? this.props.stack.slice().reverse() : [this.props.initialPanel],
     };
+
+    public componentWillReceiveProps(nextProps: IPanelStackProps) {
+        if (this.props.stack !== nextProps.stack && this.props.stack != null && nextProps.stack != null) {
+            this.setState({
+                direction: this.props.stack.length - nextProps.stack.length < 0 ? "push" : "pop",
+                stack: nextProps.stack.slice().reverse(),
+            });
+        }
+    }
 
     public render() {
         const classes = classNames(
@@ -61,7 +96,20 @@ export class PanelStack extends React.PureComponent<IPanelStackProps, IPanelStac
         );
     }
 
+    protected validateProps(props: IPanelStackProps) {
+        if (
+            (props.initialPanel == null && props.stack == null) ||
+            (props.initialPanel != null && props.stack != null)
+        ) {
+            throw new Error(Errors.PANEL_STACK_INITIAL_PANEL_STACK_MUTEX);
+        }
+        if (props.stack != null && props.stack.length === 0) {
+            throw new Error(Errors.PANEL_STACK_REQUIRES_PANEL);
+        }
+    }
+
     private renderCurrentPanel() {
+        const { showPanelHeader = true } = this.props;
         const { stack } = this.state;
         if (stack.length === 0) {
             return null;
@@ -74,6 +122,7 @@ export class PanelStack extends React.PureComponent<IPanelStackProps, IPanelStac
                     onOpen={this.handlePanelOpen}
                     panel={activePanel}
                     previousPanel={previousPanel}
+                    showHeader={showPanelHeader}
                 />
             </CSSTransition>
         );
@@ -86,17 +135,21 @@ export class PanelStack extends React.PureComponent<IPanelStackProps, IPanelStac
             return;
         }
         safeInvoke(this.props.onClose, panel);
-        this.setState(state => ({
-            direction: "pop",
-            stack: state.stack.filter(p => p !== panel),
-        }));
+        if (this.props.stack == null) {
+            this.setState(state => ({
+                direction: "pop",
+                stack: state.stack.filter(p => p !== panel),
+            }));
+        }
     };
 
     private handlePanelOpen = (panel: IPanel) => {
         safeInvoke(this.props.onOpen, panel);
-        this.setState(state => ({
-            direction: "push",
-            stack: [panel, ...state.stack],
-        }));
+        if (this.props.stack == null) {
+            this.setState(state => ({
+                direction: "push",
+                stack: [panel, ...state.stack],
+            }));
+        }
     };
 }

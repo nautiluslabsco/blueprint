@@ -1,7 +1,17 @@
 /*
  * Copyright 2015 Palantir Technologies, Inc. All rights reserved.
  *
- * Licensed under the terms of the LICENSE file distributed with this project.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 import { expect } from "chai";
@@ -126,6 +136,36 @@ describe("<DateRangeInput>", () => {
     });
 
     describe("startInputProps and endInputProps", () => {
+        it("startInput is disabled when startInputProps={ disabled: true }", () => {
+            const { root } = wrap(<DateRangeInput {...DATE_FORMAT} startInputProps={{ disabled: true }} />);
+            const startInput = getStartInput(root);
+
+            startInput.simulate("click");
+            expect(root.find(Popover).prop("isOpen")).to.be.false;
+            expect(startInput.prop("disabled")).to.be.true;
+        });
+
+        it("endInput is not disabled when startInputProps={ disabled: true }", () => {
+            const { root } = wrap(<DateRangeInput {...DATE_FORMAT} startInputProps={{ disabled: true }} />);
+            const endInput = getEndInput(root);
+            expect(endInput.prop("disabled")).to.be.false;
+        });
+
+        it("endInput is disabled when endInputProps={ disabled: true }", () => {
+            const { root } = wrap(<DateRangeInput {...DATE_FORMAT} endInputProps={{ disabled: true }} />);
+            const endInput = getEndInput(root);
+
+            endInput.simulate("click");
+            expect(root.find(Popover).prop("isOpen")).to.be.false;
+            expect(endInput.prop("disabled")).to.be.true;
+        });
+
+        it("startInput is not disabled when endInputProps={ disabled: true }", () => {
+            const { root } = wrap(<DateRangeInput {...DATE_FORMAT} endInputProps={{ disabled: true }} />);
+            const startInput = getStartInput(root);
+            expect(startInput.prop("disabled")).to.be.false;
+        });
+
         describe("startInputProps", () => {
             runTestSuite(getStartInput, inputGroupProps => {
                 return mount(<DateRangeInput {...DATE_FORMAT} startInputProps={inputGroupProps} />);
