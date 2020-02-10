@@ -1,12 +1,23 @@
 /*
-* Copyright 2018 Palantir Technologies, Inc. All rights reserved.
-*
-* Licensed under the terms of the LICENSE file distributed with this project.
-*/
+ * Copyright 2018 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 import { IProps, Utils } from "@blueprintjs/core";
 import { ItemListRenderer } from "./itemListRenderer";
 import { ItemRenderer } from "./itemRenderer";
+import { ICreateNewItem } from "./listItemsUtils";
 import { ItemListPredicate, ItemPredicate } from "./predicate";
 
 /**
@@ -28,7 +39,7 @@ export interface IListItemsProps<T> extends IProps {
      * uncontrolled (managed by the component's state). Use `onActiveItemChange`
      * to listen for updates.
      */
-    activeItem?: T | null;
+    activeItem?: T | ICreateNewItem | null;
 
     /** Array of items in the list. */
     items: T[];
@@ -65,11 +76,21 @@ export interface IListItemsProps<T> extends IProps {
     itemListPredicate?: ItemListPredicate<T>;
 
     /**
-     * Customize querying of individual items. Return `true` to keep the item, `false` to hide.
-     * This method will be invoked once for each item, so it should be performant. For more complex
-     * queries, use `itemListPredicate` to operate once on the entire array.
+     * Customize querying of individual items.
      *
-     * This prop is ignored if `itemListPredicate` is also defined.
+     * __Filtering a list of items.__ This function is invoked to filter the
+     * list of items as a query is typed. Return `true` to keep the item, or
+     * `false` to hide. This method is invoked once for each item, so it should
+     * be performant. For more complex queries, use `itemListPredicate` to
+     * operate once on the entire array. For the purposes of filtering the list,
+     * this prop is ignored if `itemListPredicate` is also defined.
+     *
+     * __Matching a pasted value to an item.__ This function is also invoked to
+     * match a pasted value to an existing item if possible. In this case, the
+     * function will receive `exactMatch=true`, and the function should return
+     * true only if the item _exactly_ matches the query. For the purposes of
+     * matching pasted values, this prop will be invoked even if
+     * `itemListPredicate` is defined.
      */
     itemPredicate?: ItemPredicate<T>;
 
@@ -107,11 +128,21 @@ export interface IListItemsProps<T> extends IProps {
     noResults?: React.ReactNode;
 
     /**
-     * Invoked when user interaction should change the active item: arrow keys move it up/down
-     * in the list, selecting an item makes it active, and changing the query may reset it to
-     * the first item in the list if it no longer matches the filter.
+     * Invoked when user interaction should change the active item: arrow keys
+     * move it up/down in the list, selecting an item makes it active, and
+     * changing the query may reset it to the first item in the list if it no
+     * longer matches the filter.
+     *
+     * If the "Create Item" option is displayed and currently active, then
+     * `isCreateNewItem` will be `true` and `activeItem` will be `null`. In this
+     * case, you should provide a valid `ICreateNewItem` object to the
+     * `activeItem` _prop_ in order for the "Create Item" option to appear as
+     * active.
+     *
+     * __Note:__ You can instantiate a `ICreateNewItem` object using the
+     * `getCreateNewItem()` utility exported from this package.
      */
-    onActiveItemChange?: (activeItem: T | null) => void;
+    onActiveItemChange?: (activeItem: T | null, isCreateNewItem: boolean) => void;
 
     /**
      * Callback invoked when an item from the list is selected,
@@ -120,9 +151,34 @@ export interface IListItemsProps<T> extends IProps {
     onItemSelect: (item: T, event?: React.SyntheticEvent<HTMLElement>) => void;
 
     /**
+     * Callback invoked when multiple items are selected at once via pasting.
+     */
+    onItemsPaste?: (items: T[]) => void;
+
+    /**
      * Callback invoked when the query string changes.
      */
     onQueryChange?: (query: string, event?: React.ChangeEvent<HTMLInputElement>) => void;
+
+    /**
+     * If provided, allows new items to be created using the current query
+     * string. This is invoked when user interaction causes a new item to be
+     * created, either by pressing the `Enter` key or by clicking on the "Create
+     * Item" option. It transforms a query string into an item type.
+     */
+    createNewItemFromQuery?: (query: string) => T;
+
+    /**
+     * Custom renderer to transform the current query string into a selectable
+     * "Create Item" option. If this function is provided, a "Create Item"
+     * option will be rendered at the end of the list of items. If this function
+     * is not provided, a "Create Item" option will not be displayed.
+     */
+    createNewItemRenderer?: (
+        query: string,
+        active: boolean,
+        handleClick: React.MouseEventHandler<HTMLElement>,
+    ) => JSX.Element | undefined;
 
     /**
      * Whether the active item should be reset to the first matching item _every

@@ -1,6 +1,16 @@
 /*
  * Copyright 2016 Palantir Technologies, Inc. All rights reserved.
- * Licensed under the terms of the LICENSE file distributed with this project.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 import classNames from "classnames";
@@ -12,6 +22,7 @@ import {
     Hotkey,
     Hotkeys,
     HotkeysTarget,
+    IEditableTextProps,
     Utils as CoreUtils,
 } from "@blueprintjs/core";
 
@@ -55,6 +66,11 @@ export interface IEditableCellProps extends ICellProps {
      * were originally provided via props.
      */
     onConfirm?: (value: string, rowIndex?: number, columnIndex?: number) => void;
+
+    /**
+     * Props that should be passed to the EditableText when it is used to edit
+     */
+    editableTextProps?: IEditableTextProps;
 }
 
 export interface IEditableCellState {
@@ -111,17 +127,27 @@ export class EditableCell extends React.Component<IEditableCellProps, IEditableC
     }
 
     public render() {
-        const { onCancel, onChange, onConfirm, truncated, wrapText, ...spreadableProps } = this.props;
+        const {
+            onCancel,
+            onChange,
+            onConfirm,
+            truncated,
+            wrapText,
+            editableTextProps,
+            ...spreadableProps
+        } = this.props;
 
         const { isEditing, dirtyValue, savedValue } = this.state;
         const interactive = spreadableProps.interactive || isEditing;
 
         let cellContents: JSX.Element = null;
         if (isEditing) {
+            const className = editableTextProps ? editableTextProps.className : null;
             cellContents = (
                 <EditableText
+                    {...editableTextProps}
                     isEditing={true}
-                    className={classNames(Classes.TABLE_EDITABLE_TEXT, Classes.TABLE_EDITABLE_NAME)}
+                    className={classNames(Classes.TABLE_EDITABLE_TEXT, Classes.TABLE_EDITABLE_NAME, className)}
                     intent={spreadableProps.intent}
                     minWidth={null}
                     onCancel={this.handleCancel}

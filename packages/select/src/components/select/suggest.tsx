@@ -1,7 +1,17 @@
 /*
  * Copyright 2017 Palantir Technologies, Inc. All rights reserved.
  *
- * Licensed under the terms of the LICENSE file distributed with this project.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 import classNames from "classnames";
@@ -30,6 +40,12 @@ export interface ISuggestProps<T> extends IListItemsProps<T> {
 
     /** Whether the input field should be disabled. */
     disabled?: boolean;
+
+    /**
+     * Whether the component should take up the full width of its container.
+     * This overrides `popoverProps.fill` and `inputProps.fill`.
+     */
+    fill?: boolean;
 
     /**
      * Props to spread to the query `InputGroup`. To control this input, use
@@ -81,6 +97,7 @@ export class Suggest<T> extends React.PureComponent<ISuggestProps<T>, ISuggestSt
 
     public static defaultProps: Partial<ISuggestProps<any>> = {
         closeOnSelect: true,
+        fill: false,
         openOnKeyDown: false,
         resetOnClose: false,
     };
@@ -133,7 +150,7 @@ export class Suggest<T> extends React.PureComponent<ISuggestProps<T>, ISuggestSt
     }
 
     private renderQueryList = (listProps: IQueryListRendererProps<T>) => {
-        const { inputProps = {}, popoverProps = {} } = this.props;
+        const { fill, inputProps = {}, popoverProps = {} } = this.props;
         const { isOpen, selectedItem } = this.state;
         const { handleKeyDown, handleKeyUp } = listProps;
         const { placeholder = "Search..." } = inputProps;
@@ -146,6 +163,11 @@ export class Suggest<T> extends React.PureComponent<ISuggestProps<T>, ISuggestSt
         const inputValue = isOpen
             ? listProps.query
             : selectedItemText || (this.props.resetOnClose ? "" : listProps.query);
+
+        if (fill) {
+            popoverProps.fill = true;
+            inputProps.fill = true;
+        }
 
         return (
             <Popover

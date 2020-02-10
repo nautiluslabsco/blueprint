@@ -1,16 +1,27 @@
 /*
  * Copyright 2018 Palantir Technologies, Inc. All rights reserved.
  *
- * Licensed under the terms of the LICENSE file distributed with this project.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 import * as React from "react";
 
-import { Button, H5, Intent, IPanel, IPanelProps, PanelStack, UL } from "@blueprintjs/core";
-import { Example, IExampleProps } from "@blueprintjs/docs-theme";
+import { Button, H5, Intent, IPanel, IPanelProps, PanelStack, Switch, UL } from "@blueprintjs/core";
+import { Example, handleBooleanChange, IExampleProps } from "@blueprintjs/docs-theme";
 
 export interface IPanelStackExampleState {
     currentPanelStack: IPanel[];
+    showHeader: boolean;
 }
 
 export class PanelStackExample extends React.PureComponent<IExampleProps, IPanelStackExampleState> {
@@ -24,11 +35,15 @@ export class PanelStackExample extends React.PureComponent<IExampleProps, IPanel
 
     public state = {
         currentPanelStack: [this.initialPanel],
+        showHeader: true,
     };
+
+    private handleHeaderChange = handleBooleanChange((showHeader: boolean) => this.setState({ showHeader }));
 
     public render() {
         const stackList = (
             <>
+                <Switch checked={this.state.showHeader} label="Show panel header" onChange={this.handleHeaderChange} />
                 <H5>Current stack</H5>
                 <UL>
                     {this.state.currentPanelStack.map((p, i) => (
@@ -44,6 +59,7 @@ export class PanelStackExample extends React.PureComponent<IExampleProps, IPanel
                     initialPanel={this.state.currentPanelStack[0]}
                     onOpen={this.addToPanelStack}
                     onClose={this.removeFromPanelStack}
+                    showPanelHeader={this.state.showHeader}
                 />
             </Example>
         );

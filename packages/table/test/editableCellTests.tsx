@@ -1,7 +1,17 @@
 /*
  * Copyright 2016 Palantir Technologies, Inc. All rights reserved.
  *
- * Licensed under the terms of the LICENSE file distributed with this project.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 import { expect } from "chai";
@@ -9,14 +19,15 @@ import { mount } from "enzyme";
 import * as React from "react";
 import * as sinon from "sinon";
 
-import * as Classes from "../src/common/classes";
+import { Classes } from "@blueprintjs/core";
+import * as TableClasses from "../src/common/classes";
 import { EditableCell } from "../src/index";
 import { CellType, expectCellLoading } from "./cellTestUtils";
 
 describe("<EditableCell>", () => {
     it("renders", () => {
         const elem = mount(<EditableCell value="test-value-5000" />);
-        expect(elem.find(`.${Classes.TABLE_TRUNCATED_TEXT}`).text()).to.equal("test-value-5000");
+        expect(elem.find(`.${TableClasses.TABLE_TRUNCATED_TEXT}`).text()).to.equal("test-value-5000");
     });
 
     it("renders loading state", () => {
@@ -29,10 +40,10 @@ describe("<EditableCell>", () => {
         const VALUE_2 = "bar";
 
         const elem = mount(<EditableCell value={VALUE_1} />);
-        expect(elem.find(`.${Classes.TABLE_TRUNCATED_TEXT}`).text()).to.equal(VALUE_1);
+        expect(elem.find(`.${TableClasses.TABLE_TRUNCATED_TEXT}`).text()).to.equal(VALUE_1);
 
         elem.setProps({ value: VALUE_2 });
-        expect(elem.find(`.${Classes.TABLE_TRUNCATED_TEXT}`).text()).to.equal(VALUE_2);
+        expect(elem.find(`.${TableClasses.TABLE_TRUNCATED_TEXT}`).text()).to.equal(VALUE_2);
     });
 
     it("edits", () => {
@@ -73,7 +84,7 @@ describe("<EditableCell>", () => {
 
         // start editing
         elem.setState({ isEditing: true, dirtyValue: "test-value-5000" });
-        const input = elem.find(`.${Classes.TABLE_EDITABLE_TEXT} input`);
+        const input = elem.find(`.${TableClasses.TABLE_EDITABLE_TEXT} input`);
         expect(input.length).to.equal(1);
 
         // make changes
@@ -129,11 +140,41 @@ describe("<EditableCell>", () => {
 
     it("defaults to no wrapText", () => {
         const elem = mount(<EditableCell />);
-        expect(elem.find(`.${Classes.TABLE_NO_WRAP_TEXT}`).exists()).to.be.true;
+        expect(elem.find(`.${TableClasses.TABLE_NO_WRAP_TEXT}`).exists()).to.be.true;
     });
 
     it("wraps text when wrapText is true", () => {
         const elem = mount(<EditableCell wrapText={true} />);
-        expect(elem.find(`.${Classes.TABLE_NO_WRAP_TEXT}`).exists()).to.be.false;
+        expect(elem.find(`.${TableClasses.TABLE_NO_WRAP_TEXT}`).exists()).to.be.false;
+    });
+
+    it("Passes editableTextProps to inner EditableText", () => {
+        const onCancel = sinon.spy();
+        const onChange = sinon.spy();
+        const onConfirm = sinon.spy();
+
+        const elem = mount(
+            <EditableCell
+                value="test-value-5000"
+                onCancel={onCancel}
+                onChange={onChange}
+                onConfirm={onConfirm}
+                editableTextProps={{
+                    className: "input-only-class",
+                    maxLength: 345,
+                    value: "ignore this",
+                }}
+            />,
+        );
+
+        // start editing
+        elem.setState({ isEditing: true, dirtyValue: "test-value-5000" });
+        const input = elem.find("input");
+        // input props that EditableCell does not care about should pass through unchanged
+        expect(input.prop("maxLength")).to.equal(345);
+        expect(elem.find(`.${Classes.EDITABLE_TEXT}`).prop("className")).to.contain("input-only-class");
+
+        // But special values should be overridden by EditableCell
+        expect(input.prop("value")).to.equal("test-value-5000");
     });
 });

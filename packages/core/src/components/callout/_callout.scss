@@ -1,5 +1,5 @@
 // Copyright 2015 Palantir Technologies, Inc. All rights reserved.
-// Licensed under the terms of the LICENSE file distributed with this project.
+// Licensed under the Apache License, Version 2.0.
 
 @import "../../common/variables";
 
@@ -9,7 +9,7 @@ Callout
 Markup:
 <div class="#{$ns}-callout {{.modifier}}">
   <h4 class="#{$ns}-heading">Callout Heading</h4>
-  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ex, delectus!
+  It's dangerous to go alone! Take this.
 </div>
 
 .#{$ns}-intent-primary - Primary intent
